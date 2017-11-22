@@ -1,7 +1,7 @@
 module DPL
   class Provider
     class Deis < Provider
-      
+
       def install_deploy_dependencies
         install_url = determine_install_url
         context.shell "curl -sSL #{install_url} | bash -x -s #{option(:cli_version)}"
@@ -92,9 +92,13 @@ module DPL
       end
 
       def builder_hostname
-        host_tokens = controller_host.split(".")
-        host_tokens[0] = [host_tokens[0], "builder"].join("-")
-        host_tokens.join(".")
+        if option(:builder).nil?
+          host_tokens = controller_host.split(".")
+          host_tokens[0] = [host_tokens[0], "builder"].join("-")
+          host_tokens.join(".")
+        else
+          option(:builder).gsub(/https?:\/\//, "").split(":")[0]
+        end
       end
 
       def controller_host
